@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Infrastructure\Eloquent;
+
+use App\Domain\{ModelName};
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;{importSoftDeletes}
+
+/**
+ * {TableComment}Eloquent
+ */
+class Eloquent{ModelName} extends Model
+{{useSoftDeletes}
+    use HasFactory;
+
+    /**
+     * @var string
+     */
+    protected $table = '{TableName}';
+
+    /**
+     * @var string
+     */
+    protected $primaryKey = '{PrimaryKey}';
+{Incrementing}{KeyType}
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        {Fillable}
+    ];
+
+    protected $casts = [
+        {Casts}
+    ];
+
+    /**
+     * @return {ModelName}
+     */
+    public function to{ModelName}(): {ModelName}
+    {
+        return new {ModelName}(
+            {Columns}
+        );
+    }
+}

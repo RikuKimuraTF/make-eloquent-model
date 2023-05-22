@@ -1,0 +1,29 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Infrastructure\Eloquent\Eloquent{ModelName};
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class Tbl{ModelName}Seeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $dataArr = [
+            {Data}
+        ];
+
+        DB::transaction(function () use ($dataArr){
+            foreach ($dataArr as $data) {
+                $e = new Eloquent{ModelName}($data);
+                $e->save();
+            }
+        });
+    }
+}

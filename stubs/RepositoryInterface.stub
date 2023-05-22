@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Domain;
+
+use Illuminate\Support\Collection;
+
+/**
+ * {TableComment}リポジトリインターフェース
+ */
+interface {ModelName}RepositoryInterface
+{
+    /**
+     * @param integer ${lowerModelName}Id
+     * @return {ModelName}|null
+     */
+    public function get(int ${lowerModelName}Id): ?{ModelName};
+
+    /**
+     * @return Collection<integer, {ModelName}>
+     */
+    public function getAll(): Collection;
+
+    /**
+     * @param array<mixed> $params
+     * @return {ModelName}
+     */
+    public function create(array $params): {ModelName};
+
+    /**
+     * @param array<mixed> $params
+     * @return {ModelName}
+     */
+    public function update(array $params): {ModelName};
+
+    /**
+     * @param integer ${lowerModelName}Id
+     * @return integer
+     */
+    public function delete(int ${lowerModelName}Id): int;
+}

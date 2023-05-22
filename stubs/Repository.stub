@@ -1,0 +1,62 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Infrastructure\Eloquent;
+
+use App\Domain\{ModelName};
+use App\Domain\{ModelName}RepositoryInterface;
+use Illuminate\Support\Collection;
+
+/**
+ * Eloquent{TableComment}リポジトリ
+ */
+class Eloquent{ModelName}Repository implements {ModelName}RepositoryInterface
+{
+    /**
+     * {@inheritDoc}
+     */
+    public function get(int ${lowerModelName}Id): ?{ModelName}
+    {
+        $e{ModelName} = Eloquent{ModelName}::where('{PrimaryKey}', ${lowerModelName}Id)->first();
+        return ($e{ModelName}) ? $e{ModelName}->to{ModelName}() : null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAll(): Collection
+    {
+        $e{ModelName}s = Eloquent{ModelName}::get();
+        return $e{ModelName}s->map->to{ModelName}();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function create(array $params): {ModelName}
+    {
+        $e{ModelName} = Eloquent{ModelName}::create($params);
+        return $e{ModelName}->to{ModelName}();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function update(array $params): {ModelName}
+    {
+        $e{ModelName} = Eloquent{ModelName}::where('{PrimaryKey}', $params['{PrimaryKey}'])
+            ->lockForUpdate()
+            ->first();
+        $e{ModelName}->fill($params)->save();
+        return $e{ModelName}->to{ModelName}();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function delete(int ${lowerModelName}Id): int
+    {
+        return Eloquent{ModelName}::where('{PrimaryKey}', ${lowerModelName}Id)->delete();
+    }
+}
