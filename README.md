@@ -1,5 +1,6 @@
 # インストール
 プライベートリポジトリのため、まずはアクセストークンの設定を行います。
+（アクセストークンについては有識者に聞いてください）
 ```
 composer config repositories.kamakas/make-eloquent-model vcs https://github.com/kamakas/make-eloquent-model
 composer config github-oauth.github.com アクセストークン
