@@ -67,8 +67,8 @@ class MakeModel extends Command
         $eloquentPath = app_path("Infrastructure/Eloquent/Eloquent{$modelName}.php");
         $repositoryInterfacePath = app_path("Domain/{$modelName}RepositoryInterface.php");
         $eloquentRepositoryPath = app_path("Infrastructure/Eloquent/Eloquent{$modelName}Repository.php");
-        $factoryPath = database_path("Factories/Infrastructure/Eloquent/Eloquent{$modelName}Factory.php");
-        $seederPath = database_path("Seeders/Tbl{$modelName}Seeder.php");
+        $factoryPath = database_path("factories/Infrastructure/Eloquent/Eloquent{$modelName}Factory.php");
+        $seederPath = database_path("seeders/Tbl{$modelName}Seeder.php");
 
         //ファイルが存在すればスキップ
         $existModel = false;
