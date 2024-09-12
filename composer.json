@@ -1,5 +1,5 @@
 {
-    "name": "RikuKimuraTF/make-eloquent-model",
+    "name": "rikukimuratf/make-eloquent-model",
     "description": "make eloquent model from table",
     "type": "library",
     "license": "MIT",
@@ -10,7 +10,8 @@
     },
     "authors": [
         {
-            "name": "Kamakas Co., Ltd."
+            "name": "Riku Kimura",
+            "homepage": "https://rikukimura.com/"
         }
     ],
     "minimum-stability": "dev",
