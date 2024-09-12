@@ -1,19 +1,12 @@
-# インストール
-プライベートリポジトリのため、まずはアクセストークンの設定を行います。
-（アクセストークンについては有識者に聞いてください）
+# Install
 ```
-composer config repositories.kamakas/make-eloquent-model vcs https://github.com/kamakas/make-eloquent-model
-composer config github-oauth.github.com アクセストークン
+composer require --dev RikuKimuraTF/make-eloquent-model
 ```
-それが終わったら実際にインストールをします。
-```
-composer require --dev kamakas/make-eloquent-model
-```
-※本番環境で使用することはないため必ずdevオプションをつけてください。
+*Since this will not be used in a production environment, be sure to add the dev option.
 
-# 使い方
-テーブル作成後、Domainモデル・Eloquentモデル・Domainリポジトリ・Eloquentリポジトリ・Factory・Seederを自動で生成することができます。  
-すでに同名のphpファイルが存在する場合は生成しません。
+# Usage
+After creating the tables, you can automatically generate a Domain model, Eloquent model, Domain repository, Eloquent repository, Factory, and Seeder.  
+If a php file with the same name already exists, it will not be generated.
 ```
 php artisan make:eloquent {table_name}
 ```
