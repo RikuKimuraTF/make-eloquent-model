@@ -1,6 +1,6 @@
 <?php
 
-namespace Kamakas\MakeEloquent\Console;
+namespace RikuKimura\MakeEloquent\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Schema;
@@ -62,6 +62,20 @@ class MakeModel extends Command
         // モデル名の取得
         $modelName = $this->getModelNameFromTableName($tableName);
 
+        // ディレクトリが存在しなければ作成
+        if (! file_exists(app_path("Domain"))) {
+            mkdir(app_path("Domain"), 0755, true);
+        }
+        if (! file_exists(app_path("Infrastructure/Eloquent"))) {
+            mkdir(app_path("Infrastructure/Eloquent"), 0755, true);
+        }
+        if (! file_exists(database_path("factories/Infrastructure/Eloquent"))) {
+            mkdir(database_path("factories/Infrastructure/Eloquent"), 0755, true);
+        }
+        if (! file_exists(database_path("seeders"))) {
+            mkdir(database_path("seeders"), 0755, true);
+        }
+
         //生成するファイル名
         $modelPath = app_path("Domain/{$modelName}.php");
         $eloquentPath = app_path("Infrastructure/Eloquent/Eloquent{$modelName}.php");
@@ -113,6 +127,12 @@ class MakeModel extends Command
             $body = str_replace("{ModelName}", $modelName, $body);
             $body = str_replace("{Properties}", $this->makePropertiesString($columns), $body);
             $body = str_replace("{Arguments}", $this->makeArgumentsString($columns), $body);
+            $body = str_replace("{CreateProperties}", $this->makeCreatePropertiesString($columns), $body);
+            $body = str_replace("{CreateArguments}", $this->makeCreateArgumentsString($columns), $body);
+            $body = str_replace("{CreateParameters}", $this->makeCreateParametersString($columns), $body);
+            $body = str_replace("{UpdateProperties}", $this->makeUpdatePropertiesString($columns), $body);
+            $body = str_replace("{UpdateArguments}", $this->makeUpdateArgumentsString($columns), $body);
+            $body = str_replace("{UpdateParameters}", $this->makeUpdateParametersString($columns), $body);
 
             //ファイル出力
             file_put_contents($modelPath, $body);
@@ -195,6 +215,8 @@ class MakeModel extends Command
             $body = str_replace("{lowerModelName}", lcfirst($modelName), $body);
             $body = str_replace("{TableComment}", $tableComment, $body);
             $body = str_replace("{PrimaryKey}", $primaryKey, $body);
+            $body = str_replace("{CreateDatabaseParam}", $this->makeDatabaseParamString($columns, lcfirst($modelName), true), $body);
+            $body = str_replace("{UpdateDatabaseParam}", $this->makeDatabaseParamString($columns, lcfirst($modelName)), $body);
 
             //ファイル出力
             file_put_contents($eloquentRepositoryPath, $body);
@@ -275,32 +297,7 @@ class MakeModel extends Command
                 continue;
             }
 
-            if (strpos($column->Type, "int") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'integer';
-            } elseif (strpos($column->Type, "tinyint") === 0 && strpos($column->Field, "flg")) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'boolean';
-            } elseif (strpos($column->Type, "tinyint") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'integer';
-            } elseif (strpos($column->Type, "bigint") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'integer';
-            } elseif (strpos($column->Type, "decimal") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'float';
-            } elseif (strpos($column->Type, "varchar") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'string';
-            } elseif (strpos($column->Type, "char") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'string';
-            } elseif (strpos($column->Type, "text") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'string';
-            } elseif (strpos($column->Type, "datetime") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'Carbon';
-            } elseif (strpos($column->Type, "timestamp") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'Carbon';
-            } elseif (strpos($column->Type, "date") === 0) {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'Carbon';
-            } else {
-                $properties[$this->changeSnakeToCamel($column->Field)] = 'string';
-            }
-
+            $properties[$this->changeSnakeToCamel($column->Field)] = $this->getColumnType($column->Type, true);
             if ($column->Null === "YES") {
                 $properties[$this->changeSnakeToCamel($column->Field)] .= '|null';
             }
@@ -326,32 +323,7 @@ class MakeModel extends Command
                 continue;
             }
 
-            if (strpos($column->Type, "int") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'int';
-            } elseif (strpos($column->Type, "tinyint") === 0 && strpos($column->Field, "flg")) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'bool';
-            } elseif (strpos($column->Type, "tinyint") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'int';
-            } elseif (strpos($column->Type, "bigint") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'int';
-            } elseif (strpos($column->Type, "decimal") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'float';
-            } elseif (strpos($column->Type, "varchar") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'string';
-            } elseif (strpos($column->Type, "char") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'string';
-            } elseif (strpos($column->Type, "text") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'string';
-            } elseif (strpos($column->Type, "datetime") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'Carbon';
-            } elseif (strpos($column->Type, "timestamp") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'Carbon';
-            } elseif (strpos($column->Type, "date") === 0) {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'Carbon';
-            } else {
-                $arguments[$this->changeSnakeToCamel($column->Field)] = 'string';
-            }
-
+            $arguments[$this->changeSnakeToCamel($column->Field)] = $this->getColumnType($column->Type);
             if ($column->Null === "YES") {
                 $arguments[$this->changeSnakeToCamel($column->Field)] = '?'
                     . $arguments[$this->changeSnakeToCamel($column->Field)];
@@ -361,6 +333,210 @@ class MakeModel extends Command
         return rtrim(join("\n        ", array_map(function ($key, $value) {
             return "public readonly {$value} \${$key},";
         }, array_keys($arguments), array_values($arguments))), ',');
+    }
+
+    /**
+     * プロパティ文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @return string
+     */
+    private function makeCreatePropertiesString(array $columns)
+    {
+        $properties = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($column->Key == "PRI") {
+                continue;
+            }
+
+            $properties[$this->changeSnakeToCamel($column->Field)] = $this->getColumnType($column->Type, true);
+            if ($column->Null === "YES") {
+                $properties[$this->changeSnakeToCamel($column->Field)] .= '|null';
+            }
+        }
+
+        return join("\n     * ", array_map(function ($key, $value) {
+            return "@param {$value} \${$key}";
+        }, array_keys($properties), array_values($properties)));
+    }
+
+    /**
+     * 引数文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @return string
+     */
+    private function makeCreateArgumentsString(array $columns)
+    {
+        $arguments = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($column->Key == "PRI") {
+                continue;
+            }
+
+            $arguments[$this->changeSnakeToCamel($column->Field)] = $this->getColumnType($column->Type);
+            if ($column->Null === "YES") {
+                $arguments[$this->changeSnakeToCamel($column->Field)] = '?'
+                    . $arguments[$this->changeSnakeToCamel($column->Field)];
+            }
+        }
+
+        return rtrim(join("\n        ", array_map(function ($key, $value) {
+            return "{$value} \${$key},";
+        }, array_keys($arguments), array_values($arguments))), ',');
+    }
+
+    /**
+     * パラーメーター文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @return string
+     */
+    private function makeCreateParametersString(array $columns)
+    {
+        $parameters = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($column->Key == "PRI") {
+                $parameters[$this->changeSnakeToCamel($column->Field)] = 0;
+                continue;
+            }
+            $parameters[$this->changeSnakeToCamel($column->Field)] = '$' . $this->changeSnakeToCamel($column->Field);
+        }
+
+        return rtrim(join("\n            ", array_map(function ($key, $value) {
+            return "{$key}: {$value},";
+        }, array_keys($parameters), array_values($parameters))), ',');
+    }
+
+    /**
+     * プロパティ文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @return string
+     */
+    private function makeUpdatePropertiesString(array $columns)
+    {
+        $properties = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($column->Key == "PRI") {
+                continue;
+            }
+
+            $properties[$this->changeSnakeToCamel($column->Field)] = $this->getColumnType($column->Type, true);
+            if ($column->Null === "YES") {
+                $properties[$this->changeSnakeToCamel($column->Field)] .= '|null';
+            }
+        }
+
+        return join("\n     * ", array_map(function ($key, $value) {
+            return "@param {$value} \${$key}";
+        }, array_keys($properties), array_values($properties)));
+    }
+
+    /**
+     * 引数文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @return string
+     */
+    private function makeUpdateArgumentsString(array $columns)
+    {
+        $arguments = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($column->Key == "PRI") {
+                continue;
+            }
+
+            $arguments[$this->changeSnakeToCamel($column->Field)] = $this->getColumnType($column->Type);
+            if ($column->Null === "YES") {
+                $arguments[$this->changeSnakeToCamel($column->Field)] = '?'
+                    . $arguments[$this->changeSnakeToCamel($column->Field)];
+            }
+        }
+
+        return rtrim(join("\n        ", array_map(function ($key, $value) {
+            return "{$value} \${$key},";
+        }, array_keys($arguments), array_values($arguments))), ',');
+    }
+
+    /**
+     * パラーメーター文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @return string
+     */
+    private function makeUpdateParametersString(array $columns)
+    {
+        $parameters = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($column->Key == "PRI") {
+                continue;
+            }
+            $parameters[$this->changeSnakeToCamel($column->Field)] = '$' . $this->changeSnakeToCamel($column->Field);
+        }
+
+        return rtrim(join("\n        ", array_map(function ($key, $value) {
+            return "$this->{$key} = {$value};";
+        }, array_keys($parameters), array_values($parameters))), ',');
+    }
+
+    /**
+     * カラムの型からプロパティや引数の型を生成する
+     * @param string $type
+     * @param boolean $isComment
+     * @return string
+     */
+    private function getColumnType(string $type, bool $isComment = false)
+    {
+        if (strpos($type, "int") === 0) {
+            return $isComment ? 'integer' : 'int';
+        } elseif (strpos($type, "tinyint") === 0 && strpos($type, "flg")) {
+            return $isComment ? 'boolean' : 'bool';
+        } elseif (strpos($type, "tinyint") === 0) {
+            return $isComment ? 'integer' : 'int';
+        } elseif (strpos($type, "bigint") === 0) {
+            return $isComment ? 'integer' : 'int';
+        } elseif (strpos($type, "decimal") === 0) {
+            return 'float';
+        } elseif (strpos($type, "varchar") === 0) {
+            return 'string';
+        } elseif (strpos($type, "char") === 0) {
+            return 'string';
+        } elseif (strpos($type, "text") === 0) {
+            return 'string';
+        } elseif (strpos($type, "datetime") === 0) {
+            return '\DateTimeImmutable';
+        } elseif (strpos($type, "timestamp") === 0) {
+            return '\DateTimeImmutable';
+        } elseif (strpos($type, "date") === 0) {
+            return '\DateTimeImmutable';
+        } else {
+            return 'string';
+        }
     }
 
     /**
@@ -438,6 +614,33 @@ class MakeModel extends Command
         return rtrim(join("\n            ", array_map(function ($value) {
             return "\$this->{$value},";
         }, array_values($modelColumns))), ',');
+    }
+
+    /**
+     * データベースパラーメーター文字列を生成する
+     *
+     * @param array<mixed> $columns
+     * @param string $lowerModelName
+     * @param boolean $isCreate
+     * @return string
+     */
+    private function makeDatabaseParamString(array $columns, string $lowerModelName, bool $isCreate = false)
+    {
+        $params = [];
+
+        foreach ($columns as $column) {
+            if ($column->Field == "created_at" || $column->Field == "updated_at" || $column->Field == "deleted_at") {
+                continue;
+            }
+            if ($isCreate && $column->Key == "PRI") {
+                continue;
+            }
+            $params[$column->Field] = $this->changeSnakeToCamel($column->Field);
+        }
+
+        return rtrim(join("\n                ", array_map(function ($key, $value) use ($lowerModelName) {
+            return "'{$key}' => \${$lowerModelName}->{$value},";
+        }, array_keys($params), array_values($params))), ',');
     }
 
     /**

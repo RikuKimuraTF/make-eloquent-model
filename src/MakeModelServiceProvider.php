@@ -1,9 +1,9 @@
 <?php
 
-namespace Kamakas\MakeEloquent;
+namespace RikuKimura\MakeEloquent;
 
 use Illuminate\Support\ServiceProvider;
-use Kamakas\MakeEloquent\Console\MakeModel;
+use RikuKimura\MakeEloquent\Console\MakeModel;
 
 class MakeModelServiceProvider extends ServiceProvider
 {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain;
 
-use Carbon\Carbon;
-
 /**
  * {TableComment}クラス
  */
@@ -17,5 +15,27 @@ class {ModelName}
     public function __construct(
         {Arguments}
     ) {
+    }
+
+    /**
+     * {CreateProperties}
+     * return self
+     */
+    public static function create(
+        {CreateArguments}
+    ): self {
+        return new self(
+            {CreateParameters}
+        );
+    }
+
+    /*
+     * {UpdateProperties}
+     * return void
+     */
+    public function update(
+        {UpdateArguments}
+    ): void {
+        {UpdateParameters}
     }
 }

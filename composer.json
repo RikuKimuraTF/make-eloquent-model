@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Kamakas\\MakeEloquent\\": "src/"
+            "RikuKimura\\MakeEloquent\\": "src/"
         }
     },
     "authors": [
@@ -28,7 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Kamakas\\MakeEloquent\\MakeModelServiceProvider"
+                "RikuKimura\\MakeEloquent\\MakeModelServiceProvider"
             ]
         }
     }

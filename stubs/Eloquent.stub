@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;{importSoftDeletes}
  */
 class Eloquent{ModelName} extends Model
 {{useSoftDeletes}
+    /**
+     * @use HasFactory<\Database\Factories\Infrastructure\Eloquent\Eloquent{ModelName}Factory>
+     */
     use HasFactory;
 
     /**
@@ -26,7 +29,7 @@ class Eloquent{ModelName} extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         {Fillable}

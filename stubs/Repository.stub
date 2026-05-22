@@ -6,7 +6,7 @@ namespace App\Infrastructure\Eloquent;
 
 use App\Domain\{ModelName};
 use App\Domain\{ModelName}RepositoryInterface;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Eloquent{TableComment}リポジトリ
@@ -25,38 +25,51 @@ class Eloquent{ModelName}Repository implements {ModelName}RepositoryInterface
     /**
      * {@inheritDoc}
      */
-    public function getAll(): Collection
+    public function getAll(): array
     {
         $e{ModelName}s = Eloquent{ModelName}::get();
-        return $e{ModelName}s->map->to{ModelName}();
+        return $e{ModelName}s->map->to{ModelName}()->all();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function create(array $params): {ModelName}
+    public function create({ModelName} ${lowerModelName}): {ModelName}
     {
-        $e{ModelName} = Eloquent{ModelName}::create($params);
+        $e{ModelName} = DB::transaction(function () use (${lowerModelName}): Eloquent{ModelName} {
+            $e{ModelName} = Eloquent{ModelName}::create([
+                {CreateDatabaseParam}
+            ]);
+            return $e{ModelName};
+        });
         return $e{ModelName}->to{ModelName}();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function update(array $params): {ModelName}
+    public function update({ModelName} ${lowerModelName}): {ModelName}
     {
-        $e{ModelName} = Eloquent{ModelName}::where('{PrimaryKey}', $params['{PrimaryKey}'])
-            ->lockForUpdate()
-            ->first();
-        $e{ModelName}->fill($params)->save();
+        $e{ModelName} = DB::transaction(function () use (${lowerModelName}): Eloquent{ModelName} {
+            $e{ModelName} = Eloquent{ModelName}::where('{PrimaryKey}', ${lowerModelName}->{lowerModelName}Id)
+                ->lockForUpdate()
+                ->first();
+            $e{ModelName}->fill([
+                {UpdateDatabaseParam}
+            ])->save();
+            return $e{ModelName};
+        });
         return $e{ModelName}->to{ModelName}();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function delete(int ${lowerModelName}Id): int
+    public function delete(int ${lowerModelName}Id): bool
     {
-        return Eloquent{ModelName}::where('{PrimaryKey}', ${lowerModelName}Id)->delete();
+        return DB::transaction(function () use (${lowerModelName}Id): bool {
+            $e{ModelName} = Eloquent{ModelName}::find(${lowerModelName}Id);
+            return $e{ModelName} ? $e{ModelName}->delete() : false;
+        });
     }
 }
